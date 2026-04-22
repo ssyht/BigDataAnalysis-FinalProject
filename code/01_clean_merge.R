@@ -112,7 +112,7 @@ analysis_df %>%
 # 9. Save cleaned file
 # ----------------------------
 dir.create("output", showWarnings = FALSE)
-write_csv(analysis_df, "output/analysis_df.csv")
+write_csv(analysis_df, "/Users/sanjitsubhash/Desktop/BigDataAnalysis-FinalProject/output/tables/analysis_df.csv")
 
 
 
