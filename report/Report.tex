@@ -11,9 +11,7 @@
 
 \author{
 \IEEEauthorblockN{Sanjit Subhash}
-\IEEEauthorblockA{
-University of Missouri-Columbia\\
-ssyht@umsystem.edu
+\IEEEauthorblockA{ssyht@umsystem.edu
 }
 }
 
@@ -22,64 +20,41 @@ ssyht@umsystem.edu
 \maketitle
 
 \begin{abstract}
-Managing fatigue in elite athletics is difficult because training load and athlete wellness are not always measured in the same way. In this project, I studied the relationship between recent workload and wellness outcomes in the Canadian National Women's Rugby Sevens dataset. I combined player-reported wellness measures, perceived exertion records, and game context to examine whether recent workload was associated with fatigue, monitoring score, and training readiness. The results showed that workload variables were meaningfully related to player wellness, although not always in the expected direction. Among the three outcomes, training readiness was the best-predicted measure. In particular, the acute-chronic workload ratio and game-day status were consistently important across the models. These findings suggest that workload metrics can be useful for athlete monitoring, but the relationship between load and fatigue is complex and should be interpreted with caution.
+This project studies whether recent workload measures are associated with wellness outcomes in the Canadian National Women's Rugby Sevens dataset. Using player-reported wellness, perceived exertion, and game context data, I examined relationships between workload and fatigue, monitoring score, and training readiness. The results showed that workload variables were meaningfully related to wellness, with training readiness giving the strongest model fit. In particular, the acute-chronic workload ratio and game-day status were consistently important. Overall, the findings suggest that workload metrics can help support athlete monitoring, but the relationship between load and fatigue is complex.
 \end{abstract}
 
 \section{Introduction}
-Fatigue management is important in high-performance sports because excessive workload can reduce performance and increase injury risk. Rugby Sevens is especially demanding because athletes may play multiple games within a short period of time. The challenge in this dataset is to better understand how training load relates to fatigue and wellness. Instead of trying to solve the entire challenge, this report focuses on one narrower question: whether recent workload measures are associated with athlete wellness and readiness.
+Fatigue management is important in high-performance sports because excessive workload can reduce performance and increase injury risk. Rugby Sevens is especially demanding because athletes may play multiple games within a short time period. This report focuses on one question: whether recent workload measures are associated with athlete wellness and readiness.
 
-\section{Data Description}
-The data come from the Canadian National Women's Rugby Team during the 2017--2018 season. This analysis uses three main files: \texttt{wellness.csv}, \texttt{rpe.csv}, and \texttt{games.csv}. The wellness file contains player-reported recovery information such as fatigue, monitoring score, and training readiness. The RPE file contains workload measures such as session load, daily load, acute load, chronic load, and the acute-chronic ratio. The games file provides match dates and game context.
 
-The files were merged using \texttt{Date} and \texttt{PlayerID}. Players 18--21 were removed because they did not play in the season dataset. Missingness was low for the main wellness outcomes, but higher for some workload variables, especially \texttt{DailyLoad}. Because of this, the final analysis focused mainly on \texttt{AcuteLoad}, \texttt{ChronicLoad}, and \texttt{AcuteChronicRatio}.
+\noindent
+GitHub repository for R code, figures, tables, and data: \url{https://github.com/ssyht/BigDataAnalysis-FinalProject}
 
-\section{Methods}
-The main outcomes in this study are \texttt{Fatigue}, \texttt{MonitoringScore}, and \texttt{TrainingReadiness}. The main predictors are \texttt{AcuteLoad}, \texttt{ChronicLoad}, and \texttt{AcuteChronicRatio}. Because the RPE data contain multiple sessions per player per day, the workload data were first aggregated to the player-day level. These daily workload summaries were then merged with the wellness data. A game-day indicator was also created from the games file.
+\section{Data and Methods}
+The data come from the 2017--2018 Canadian National Women's Rugby Team season and use three files: \texttt{wellness.csv}, \texttt{rpe.csv}, and \texttt{games.csv}. The files were merged using \texttt{Date} and \texttt{PlayerID}, and players 18--21 were removed because they did not play in the provided season data.
 
-To study the relationship between workload and wellness, I fit linear regression models with player fixed effects:
+The main outcomes are \texttt{Fatigue}, \texttt{MonitoringScore}, and \texttt{TrainingReadiness}. The main predictors are \texttt{AcuteLoad}, \texttt{ChronicLoad}, and \texttt{AcuteChronicRatio}. Because the RPE data contain multiple sessions per player per day, the workload data were aggregated to the player-day level and merged with the wellness data. A game-day indicator was also created from the games file. Linear regression models with player fixed effects were fit:
 \begin{equation}
 \begin{aligned}
 Y_{it} =\;& \beta_0 + \beta_1 \text{AcuteLoad}_{it} + \beta_2 \text{ChronicLoad}_{it} \\
 &+ \beta_3 \text{ACR}_{it} + \beta_4 \text{GameDay}_{it} + \alpha_i + \varepsilon_{it}
 \end{aligned}
 \end{equation}
-where $Y_{it}$ is a wellness outcome for player $i$ on day $t$, $\alpha_i$ represents player-specific effects, and $\varepsilon_{it}$ is the error term.
-
-This approach was used because subjective wellness scales may differ across athletes, so controlling for player-specific effects helps separate within-player patterns from overall differences in reporting style.
+where $Y_{it}$ is a wellness outcome for player $i$ on day $t$.
 
 \section{Results}
-The descriptive analysis showed that fatigue was concentrated around moderate values, especially 3 and 4, while monitoring score was centered in the high teens. Training readiness was generally high, with many observations close to 100. These patterns suggest that the athletes often reported moderate fatigue but relatively strong readiness overall.
+Fatigue was concentrated around moderate values, monitoring score was centered in the high teens, and training readiness was generally high. Across the three models, workload variables were associated with wellness outcomes, although the direction and strength of the relationships varied by outcome. The fatigue model had an $R^2$ of about 0.35, the monitoring score model had an $R^2$ of about 0.37, and the training readiness model had the strongest fit with an $R^2$ of about 0.54.
 
-Across the three regression models, workload variables were consistently related to wellness outcomes, although the direction and strength of the relationships varied by outcome. The fatigue model had an $R^2$ of about 0.35, the monitoring score model had an $R^2$ of about 0.37, and the training readiness model had the strongest fit with an $R^2$ of about 0.54. This suggests that training readiness was the most predictable of the three outcomes.
+The acute-chronic ratio was one of the most consistent predictors across all three models. Game-day status was also significant across the models. Figure~\ref{fig:gameday_ready} compares training readiness on game days and non-game days. The boxplot suggests that readiness was slightly higher on game days, which matches the positive game-day effect in the regression model. For fatigue and monitoring score, acute load showed a slight negative relationship in both the exploratory plots and regression results, suggesting that workload was related to athlete wellness, but not always in the simple direction of ``more load means worse outcomes.''
 
-The acute-chronic ratio was one of the most consistent predictors across all three models. Game-day status was also significant across the models, suggesting that athlete-reported wellness differed between game days and non-game days. Figure~\ref{fig:acr_ready} shows a positive overall relationship between acute-chronic ratio and training readiness. Although the scatter is wide, the fitted line suggests that readiness tended to be somewhat higher at larger values of the acute-chronic ratio.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{img/figure1.png}
-\caption{Relationship between acute-chronic workload ratio and training readiness. The fitted line shows a modest positive trend, suggesting that training readiness tended to be higher when the acute-chronic ratio was larger.}
-\label{fig:acr_ready}
-\end{figure}
-
-Figure~\ref{fig:gameday_ready} compares training readiness on game days and non-game days. The boxplot suggests that training readiness was slightly higher on game days, with a somewhat higher median and upper distribution. This visual pattern matches the regression result showing that game-day status was an important predictor of readiness.
-
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{img/figure2.png}
-\caption{Training readiness on game days versus non-game days. Readiness appears slightly higher on game days, which is consistent with the positive game-day effect in the regression model.}
+\caption{Training readiness on game days versus non-game days. Readiness appears slightly higher on game days.}
 \label{fig:gameday_ready}
 \end{figure}
 
-For fatigue and monitoring score, acute load showed a slight negative relationship in both the exploratory plots and regression results. This means that recent workload was clearly related to athlete wellness, but not always in the simple direction of ``more load means worse outcomes.'' Instead, the results point to a more nuanced relationship between workload and self-reported athlete condition.
-
-\section{Discussion}
-The main finding of this project is that workload metrics were meaningfully associated with athlete wellness, but the relationship was complex. The strongest outcome was training readiness, which had the highest model fit and the clearest visual patterns. In particular, the acute-chronic ratio and game-day status appeared to carry useful information about how prepared athletes felt.
-
-One useful interpretation is that workload and fatigue are related, but they are not the same thing. This is important because the challenge itself emphasized that training load should not automatically be treated as a direct measure of fatigue. In this analysis, fatigue and monitoring score behaved somewhat differently from training readiness, which suggests that these variables may capture different dimensions of athlete condition.
-
-There are also several limitations. First, some workload variables had meaningful missingness, especially \texttt{DailyLoad}, so not all candidate predictors were equally usable. Second, the outcomes in this dataset are discrete or bounded, especially fatigue and training readiness, so linear regression is a simplification rather than a perfect model. Third, this analysis focuses on a narrow subset of the full challenge and does not include detailed GPS-based movement summaries. Even so, the results provide a useful first step toward understanding how player workload connects to perceived wellness in elite rugby sevens.
-
-\section{Conclusion}
-This project examined whether recent workload measures were associated with fatigue, monitoring score, and training readiness in elite women's rugby sevens. Using wellness, RPE, and game context data, the analysis showed that workload metrics such as acute load, chronic load, and especially the acute-chronic ratio were related to athlete wellness outcomes. Among the three outcomes, training readiness was the clearest and best-predicted measure. Overall, these findings suggest that workload metrics can support athlete monitoring, but they should be interpreted together with player-specific patterns rather than as universal standalone indicators.
+\section{Discussion and Conclusion}
+The main finding of this project is that workload metrics were meaningfully associated with athlete wellness, but the relationship was complex. Training readiness was the strongest outcome in the models, and the acute-chronic ratio and game-day status appeared to provide useful information about how prepared athletes felt. At the same time, fatigue and monitoring score behaved somewhat differently, suggesting that these outcomes may capture different dimensions of athlete condition.
 
 \end{document}
