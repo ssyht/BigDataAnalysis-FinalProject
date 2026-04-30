@@ -1,8 +1,5 @@
 library(tidyverse)
 
-# ----------------------------
-# 0. Set folders
-# ----------------------------
 base_path <- "/Users/sanjitsubhash/Desktop/BigDataAnalysis-FinalProject"
 output_path <- file.path(base_path, "output")
 figures_path <- file.path(output_path, "figures")
@@ -12,14 +9,11 @@ dir.create(output_path, showWarnings = FALSE, recursive = TRUE)
 dir.create(figures_path, showWarnings = FALSE, recursive = TRUE)
 dir.create(tables_path, showWarnings = FALSE, recursive = TRUE)
 
-# ----------------------------
-# 1. Load cleaned analysis data
-# ----------------------------
+# Load cleaned analysis data
 analysis_df <- read_csv(file.path(tables_path, "analysis_df.csv"), show_col_types = FALSE)
 
-# ----------------------------
-# 2. Summary table for main variables
-# ----------------------------
+
+# main variables summary table
 summary_table <- analysis_df %>%
   select(Fatigue, MonitoringScore, TrainingReadiness,
          DailyLoad, AcuteLoad, ChronicLoad, AcuteChronicRatio) %>%
@@ -27,7 +21,7 @@ summary_table <- analysis_df %>%
 
 print(summary_table)
 
-# Save missingness summary
+# Saving missingness summary
 missingness_table <- analysis_df %>%
   select(Fatigue, MonitoringScore, TrainingReadiness,
          DailyLoad, AcuteLoad, ChronicLoad, AcuteChronicRatio, GameDay) %>%
@@ -39,9 +33,8 @@ missingness_table <- analysis_df %>%
 print(missingness_table)
 write_csv(missingness_table, file.path(tables_path, "missingness_summary.csv"))
 
-# ----------------------------
-# 3. Histograms of main wellness outcomes
-# ----------------------------
+
+# histograms of main wellness outcomes
 p1 <- ggplot(analysis_df, aes(x = Fatigue)) +
   geom_histogram(bins = 20) +
   labs(
@@ -78,9 +71,7 @@ p3 <- ggplot(analysis_df, aes(x = TrainingReadiness)) +
 print(p3)
 ggsave(file.path(figures_path, "trainingreadiness_hist.png"), p3, width = 6, height = 4)
 
-# ----------------------------
-# 4. Scatterplots: workload vs wellness
-# ----------------------------
+# scatterplots: workload vs wellness
 scatter_df1 <- analysis_df %>%
   filter(!is.na(AcuteLoad), !is.na(Fatigue))
 
@@ -129,9 +120,8 @@ p6 <- ggplot(scatter_df3, aes(x = AcuteLoad, y = MonitoringScore)) +
 print(p6)
 ggsave(file.path(figures_path, "acuteload_monitoringscore.png"), p6, width = 6, height = 4)
 
-# ----------------------------
-# 5. Boxplots: game day vs non-game day
-# ----------------------------
+
+# boxplots for game day vs non-game day
 p7 <- ggplot(analysis_df, aes(x = factor(GameDay), y = Fatigue)) +
   geom_boxplot() +
   labs(
@@ -168,9 +158,7 @@ p9 <- ggplot(analysis_df, aes(x = factor(GameDay), y = MonitoringScore)) +
 print(p9)
 ggsave(file.path(figures_path, "gameday_monitoringscore_boxplot.png"), p9, width = 6, height = 4)
 
-# ----------------------------
-# 6. Correlation table for main numeric variables
-# ----------------------------
+# correlation table for main numeric variables
 corr_df <- analysis_df %>%
   select(Fatigue, MonitoringScore, TrainingReadiness,
          AcuteLoad, ChronicLoad, AcuteChronicRatio)
@@ -180,9 +168,6 @@ correlation_matrix <- cor(corr_df, use = "pairwise.complete.obs")
 print(correlation_matrix)
 write.csv(correlation_matrix, file.path(tables_path, "correlation_matrix.csv"), row.names = TRUE)
 
-# ----------------------------
-# 7. Quick confirmation
-# ----------------------------
 cat("Loaded analysis data from:\n", file.path(tables_path, "analysis_df.csv"), "\n\n")
 cat("EDA figures saved to:\n", figures_path, "\n\n")
 cat("EDA tables saved to:\n", tables_path, "\n")
