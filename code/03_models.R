@@ -1,8 +1,5 @@
 library(tidyverse)
 
-# ----------------------------
-# 0. Set folders
-# ----------------------------
 base_path <- "/Users/sanjitsubhash/Desktop/BigDataAnalysis-FinalProject"
 output_path <- file.path(base_path, "output")
 figures_path <- file.path(output_path, "figures")
@@ -12,14 +9,9 @@ dir.create(output_path, showWarnings = FALSE, recursive = TRUE)
 dir.create(figures_path, showWarnings = FALSE, recursive = TRUE)
 dir.create(tables_path, showWarnings = FALSE, recursive = TRUE)
 
-# ----------------------------
-# 1. Load cleaned analysis data
-# ----------------------------
 analysis_df <- read_csv(file.path(tables_path, "analysis_df.csv"), show_col_types = FALSE)
 
-# ----------------------------
-# 2. Create model dataset
-# ----------------------------
+# Creating model dataset
 model_df <- analysis_df %>%
   filter(
     !is.na(Fatigue),
@@ -30,9 +22,7 @@ model_df <- analysis_df %>%
 cat("Rows in model dataset:", nrow(model_df), "\n")
 cat("Columns in model dataset:", ncol(model_df), "\n\n")
 
-# ----------------------------
-# 3. Fit models
-# ----------------------------
+# Fitting models
 m1 <- lm(
   Fatigue ~ AcuteLoad + ChronicLoad + AcuteChronicRatio + GameDay + factor(PlayerID),
   data = model_df
@@ -48,9 +38,8 @@ m3 <- lm(
   data = model_df
 )
 
-# ----------------------------
-# 4. Print summaries
-# ----------------------------
+
+# Printing summaries
 cat("========== MODEL 1: FATIGUE ==========\n")
 summary_m1 <- summary(m1)
 print(summary_m1)
@@ -63,9 +52,7 @@ cat("\n========== MODEL 3: TRAINING READINESS ==========\n")
 summary_m3 <- summary(m3)
 print(summary_m3)
 
-# ----------------------------
-# 5. Save model coefficient tables
-# ----------------------------
+
 coef_m1 <- as.data.frame(summary_m1$coefficients)
 coef_m1$Term <- rownames(coef_m1)
 rownames(coef_m1) <- NULL
@@ -81,9 +68,7 @@ coef_m3$Term <- rownames(coef_m3)
 rownames(coef_m3) <- NULL
 write_csv(coef_m3, file.path(tables_path, "model3_trainingreadiness_coefficients.csv"))
 
-# ----------------------------
-# 6. Save model fit summary table
-# ----------------------------
+
 model_fit_table <- tibble(
   Model = c("Fatigue", "MonitoringScore", "TrainingReadiness"),
   R_Squared = c(summary_m1$r.squared, summary_m2$r.squared, summary_m3$r.squared),
@@ -95,9 +80,7 @@ model_fit_table <- tibble(
 print(model_fit_table)
 write_csv(model_fit_table, file.path(tables_path, "model_fit_summary.csv"))
 
-# ----------------------------
-# 7. Optional diagnostic plots
-# ----------------------------
+
 png(file.path(figures_path, "model1_fatigue_residuals.png"), width = 800, height = 600)
 plot(m1, which = 1)
 dev.off()
@@ -110,8 +93,5 @@ png(file.path(figures_path, "model3_trainingreadiness_residuals.png"), width = 8
 plot(m3, which = 1)
 dev.off()
 
-# ----------------------------
-# 8. Confirmation
-# ----------------------------
 cat("\nModel tables saved to:\n", tables_path, "\n\n")
 cat("Model diagnostic figures saved to:\n", figures_path, "\n")
